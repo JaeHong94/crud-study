@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.example.shoptest.api.response.ShopResponse.toDto;
+
+@CrossOrigin(origins = "http://localhost:3000")
 @Controller
 @RequiredArgsConstructor
 public class ShopController {
@@ -37,13 +40,23 @@ public class ShopController {
   @GetMapping("/goods/{id}")
   public ResponseEntity<ShopResponse> findShop(@PathVariable long id) {
     ShopEntity shop = shopService.findById(id);
-    return ResponseEntity.ok().body(new ShopResponse(shop.getName(), shop.getCount()));
+    return ResponseEntity.ok().body(new ShopResponse(shop.getId(), shop.getName(), shop.getCount()));
   }
 
   // 상품 수정
   @PutMapping("/goods/{id}")
   public ResponseEntity<ShopEntity> updateShop(@PathVariable long id, @RequestBody UpdateShopRequest request) {
     ShopEntity shop = shopService.update(id, request);
+
+    return ResponseEntity.ok().body(shop);
+  }
+
+  @GetMapping("/goods")
+  public ResponseEntity<List<ShopResponse>> findAllGoods() {
+    List<ShopResponse> shop = shopService.findAll()
+            .stream()
+            .map(ShopResponse::toDto)
+            .toList();
 
     return ResponseEntity.ok().body(shop);
   }
